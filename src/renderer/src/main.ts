@@ -10,6 +10,7 @@ import Framework7Vue, { registerComponents } from "framework7-vue/bundle";
 
 // Import Framework7 Styles
 import "framework7/css/bundle";
+import "framework7-icons/css/framework7-icons.css";
 
 // Import App Component
 import App from "./App.vue";

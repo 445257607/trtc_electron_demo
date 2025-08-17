@@ -7,7 +7,7 @@ import store from "@renderer/store";
 
 const f7params = {
   name: "f7-demo", // App name
-  theme: "auto", // Automatic theme detection
+  theme: "ios", // Automatic theme detection
   // App store
   store: store,
   // App routes
