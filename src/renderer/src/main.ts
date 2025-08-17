@@ -1,6 +1,27 @@
-import './assets/main.css'
+import "./assets/main.css";
+// Import Vue
+import { createApp } from "vue";
 
-import { createApp } from 'vue'
-import App from './App.vue'
+// Import Framework7
+import Framework7 from "framework7/bundle";
 
-createApp(App).mount('#app')
+// Import Framework7-Vue Plugin
+import Framework7Vue, { registerComponents } from "framework7-vue/bundle";
+
+// Import Framework7 Styles
+import "framework7/css/bundle";
+
+// Import App Component
+import App from "./App.vue";
+
+// Init Framework7-Vue Plugin
+Framework7.use(Framework7Vue);
+
+// Init App
+const app = createApp(App);
+
+// Register Framework7 Vue components
+registerComponents(app);
+
+// Mount the app
+app.mount("#app");
