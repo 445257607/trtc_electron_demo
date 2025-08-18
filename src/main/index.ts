@@ -3,6 +3,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import TRTCCloud from "./libs/trtc-electron-sdk/liteav";
+console.info("TRTCCloud", TRTCCloud);
+const trtc = TRTCCloud.getTRTCShareInstance();
+console.info("trtc.getSDKVersion()", trtc.getSDKVersion());
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({

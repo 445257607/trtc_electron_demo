@@ -25,7 +25,8 @@
     "@electron-toolkit/utils": "^4.0.0",
     "framework7": "^8.3.4",
     "framework7-icons": "^5.0.5",
-    "framework7-vue": "^8.3.4"
+    "framework7-vue": "^8.3.4",
+    "vite-plugin-static-copy": "^3.1.1"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config-prettier": "3.0.0",
