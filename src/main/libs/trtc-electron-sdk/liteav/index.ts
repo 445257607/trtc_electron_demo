@@ -1,0 +1,14 @@
+// export * from './trtc_define';
+// export * from './trtc_code';
+// export * from './vod_player';
+// export * from './extensions/DeviceManager';
+// export * from './extensions/AudioEffectManager';
+// export * from './extensions/MediaMixingManager';
+// export * from './extensions/PluginManager';
+export * from "./trtc";
+// export * from './Live/Pusher';
+// export * from './Live/Player';
+// export * from './Live/live_define';
+// export * from './LocalMediaTranscoder';
+import TRTCCloud from "./trtc";
+export default TRTCCloud;
