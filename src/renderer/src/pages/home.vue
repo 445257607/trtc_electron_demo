@@ -49,6 +49,21 @@
         title="Request Data & Load"
         link="/request-and-load/user/123456/"
       ></f7-list-item>
+      <f7-list-button title="加入房间" @click="onClickJoinRoom" />
+      <f7-list-button title="离开房间" @click="onClickLeaveRoom" />
     </f7-list>
   </f7-page>
 </template>
+<script setup lang="ts">
+function onClickJoinRoom(): void {
+  console.info('onClickJoinRoom', window.api)
+  window.api.joinRoom({
+    roomId: 1,
+  })
+}
+
+function onClickLeaveRoom(): void {
+  console.info('onClickLeaveRoom', window.api)
+  window.api.leaveRoom()
+}
+</script>

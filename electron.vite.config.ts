@@ -15,7 +15,13 @@ export default defineConfig({
           }
         ]
       })
-    ]
+    ],
+    resolve: {
+      alias: {
+        '@main': resolve('src/main'),
+        '@preload': resolve('src/preload')
+      }
+    }
   },
   preload: {
     plugins: [externalizeDepsPlugin()]
@@ -23,7 +29,8 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
-        '@renderer': resolve('src/renderer/src')
+        '@renderer': resolve('src/renderer/src'),
+        '@preload': resolve('src/preload')
       }
     },
     plugins: [vue()]

@@ -1,5 +1,5 @@
-// export * from './trtc_define';
-// export * from './trtc_code';
+export * from "./trtc_define";
+export * from "./trtc_code";
 // export * from './vod_player';
 // export * from './extensions/DeviceManager';
 // export * from './extensions/AudioEffectManager';

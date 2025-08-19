@@ -1,6 +1,6 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
-import { TRTCInitConfig, TRTCParams } from "./trtc_define";
+import { TRTCAppScene, TRTCInitConfig, TRTCParams } from "./trtc_define";
 import NodeTRTCEngine from "../build/Release/trtc_electron_sdk.node";
 import { Logger } from "./logger";
 const pkg = { version: "12.6.705" };
@@ -277,6 +277,7 @@ class TRTCCloud extends EventEmitter {
     this.rtcCloud.setTRTCCloudCallback((args) => {
       const key = args[0];
       const data = args[1];
+      console.info('TRTCCloudCallback', key, data);
       switch (key) {
         case "onError":
           this.handleOnError(data.errCode, data.errMsg);
@@ -347,12 +348,12 @@ class TRTCCloud extends EventEmitter {
         case "onSendFirstLocalAudioFrame":
           this.handleOnSendFirstLocalAudioFrame();
           break;
-        case "onUserEnter":
-          this.handleOnUserEnter(data.userId);
-          break;
-        case "onUserExit":
-          this.handleOnUserExit(data.userId, data.reason);
-          break;
+        // case "onUserEnter":
+        //   this.handleOnUserEnter(data.userId);
+        //   break;
+        // case "onUserExit":
+        //   this.handleOnUserExit(data.userId, data.reason);
+        //   break;
         case "onConnectionLost":
           this.handleOnConnectionLost();
           break;
@@ -524,7 +525,7 @@ class TRTCCloud extends EventEmitter {
    * @param {Number} errCode - 错误码
    * @param {String} errMsg  - 错误信息
    */
-  handleOnError(errCode, errMsg): void {
+  handleOnError(errCode: number, errMsg: string): void {
     this.fire("onError", errCode, errMsg);
   }
   /**
@@ -535,7 +536,7 @@ class TRTCCloud extends EventEmitter {
    * @param {String} warningMsg  - 警告信息
    * @param {Any} extra - 补充信息
    */
-  handleOnWarning(warningCode, warningMsg, extra): void {
+  handleOnWarning(warningCode: number, warningMsg: string, extra: any): void {
     this.fire("onWarning", warningCode, warningMsg, extra);
   }
   /////////////////////////////////////////////////////////////////////////////////
@@ -558,7 +559,7 @@ class TRTCCloud extends EventEmitter {
    * @event TRTCCallback#onEnterRoom
    * @param {Number} result - result > 0 时为进房耗时（ms），result < 0 时为进房错误码。
    */
-  handleOnEnterRoom(result): void {
+  handleOnEnterRoom(result: number): void {
     this.fire("onEnterRoom", result);
     const params = {
       js_version: pkg.version,
@@ -590,7 +591,7 @@ class TRTCCloud extends EventEmitter {
    * @event TRTCCallback#onExitRoom
    * @param {Number} reason - 离开房间原因，0：主动调用 exitRoom 退房；1：被服务器踢出当前房间；2：当前房间整个被解散。
    */
-  handleOnExitRoom(reason): void {
+  handleOnExitRoom(reason: number): void {
     this.fire("onExitRoom", reason);
   }
   /**
@@ -659,7 +660,7 @@ class TRTCCloud extends EventEmitter {
    * @event TRTCCallback#onRemoteUserEnterRoom
    * @param {String} userId - 用户标识
    */
-  handleOnRemoteUserEnterRoom(userId): void {
+  handleOnRemoteUserEnterRoom(userId: string): void {
     this.fire("onRemoteUserEnterRoom", userId);
   }
   /**
@@ -673,7 +674,7 @@ class TRTCCloud extends EventEmitter {
    * @param {String} userId - 用户标识
    * @param {Number} reason - 离开原因，0表示用户主动退出房间，1表示用户超时退出，2表示被踢出房间。
    */
-  handleOnRemoteUserLeaveRoom(userId, reason): void {
+  handleOnRemoteUserLeaveRoom(userId: string, reason: number): void {
     // const streamTypeList = [
     //   trtc_define_1.TRTCVideoStreamType.TRTCVideoStreamTypeBig,
     //   trtc_define_1.TRTCVideoStreamType.TRTCVideoStreamTypeSub,
@@ -719,31 +720,6 @@ class TRTCCloud extends EventEmitter {
   handleOnSendFirstLocalAudioFrame(): void {
     this.logger.log(`onSendFirstLocalAudioFrame`);
     this.fire("onSendFirstLocalAudioFrame");
-  }
-  /**
-   * 废弃事件：有主播加入当前房间
-   *
-   * 该回调接口可以被看作是 onRemoteUserEnterRoom 的废弃版本，不推荐使用。请使用 onUserVideoAvailable 或 onRemoteUserEnterRoom 进行替代。
-   *
-   * @deprecated 从 TRTCSDK6.8 后该接口已被废弃，不推荐使用
-   * @event TRTCCallback#onUserEnter
-   * @param {String} userId - 用户标识
-   */
-  handleOnUserEnter(userId): void {
-    this.fire("onUserEnter", userId);
-  }
-  /**
-   * 废弃事件：有主播离开当前房间
-   *
-   * 该回调接口可以被看作是 onRemoteUserLeaveRoom 的废弃版本，不推荐使用。请使用 onUserVideoAvailable 或 onRemoteUserEnterRoom 进行替代。
-   *
-   * @deprecated 从 TRTCSDK6.8 后该接口已被废弃，不推荐使用
-   * @event TRTCCallback#onUserExit
-   * @param {String} userId - 用户标识
-   * @param {Number} reason - 离开原因代码，区分用户是正常离开，还是由于网络断线等原因离开。
-   */
-  handleOnUserExit(userId, reason): void {
-    this.fire("onUserExit", userId, reason);
   }
   /////////////////////////////////////////////////////////////////////////////////
   //
@@ -1218,13 +1194,9 @@ class TRTCCloud extends EventEmitter {
    * @param {String} params.userDefineRecordId - 设置云端录制完成后的回调消息中的 "userdefinerecordid"  字段内容，便于您更方便的识别录制回调。
    * @param {TRTCAppScene} scene - 应用场景，目前支持视频通话（VideoCall）、在线直播（Live）、语音通话（AudioCall）、语音聊天室（VoiceChatRoom）四种场景。
    */
-  enterRoom(params, scene): void {
-    if (params instanceof TRTCParams) {
-      // params.streamId = params.streamId === '' ? null : params.streamId;
-      this.rtcCloud.enterRoom(params, scene);
-    } else {
-      this.logger.error("trtc:enterRoom, params is not instanceof TRTCParams!");
-    }
+  enterRoom(params: TRTCParams, scene: TRTCAppScene): void {
+     // params.streamId = params.streamId === '' ? null : params.streamId;
+    this.rtcCloud.enterRoom(params, scene);
   }
   /**
    * 退出房间

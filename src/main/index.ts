@@ -3,12 +3,11 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-import TRTCCloud from "./libs/trtc-electron-sdk/liteav";
-console.info("TRTCCloud", TRTCCloud);
-const trtc = TRTCCloud.getTRTCShareInstance();
-console.info("trtc.getSDKVersion()", trtc.getSDKVersion());
+import Api from '@preload/Api'
+import api from "@main/api"
+export let mainWindow: BrowserWindow | null = null
 
-function createWindow(): void {
+function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
@@ -38,6 +37,8 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  return mainWindow
 }
 
 // This method will be called when Electron has finished
@@ -56,13 +57,18 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
-
-  createWindow()
+  ipcMain.handle("Api", (_, method: string, params) => {
+    console.info('Api method called:', method, params);
+    api[method as keyof Api](params);
+  })
+  mainWindow = createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) {
+      mainWindow = createWindow();
+    }
   })
 })
 
