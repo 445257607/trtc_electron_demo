@@ -1,7 +1,10 @@
 /// <reference types="node" />
 import { EventEmitter } from "events";
 import { TRTCAppScene, TRTCInitConfig, TRTCParams } from "./trtc_define";
-import NodeTRTCEngine from "../build/Release/trtc_electron_sdk.node";
+
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const NodeTRTCEngine = require("./trtc_electron_sdk.node");
+
 import { Logger } from "./logger";
 const pkg = { version: "12.6.705" };
 const SDK_LOG_LEVEL = 2;

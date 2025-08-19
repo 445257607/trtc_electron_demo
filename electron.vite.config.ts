@@ -12,6 +12,14 @@ export default defineConfig({
           {
             src: 'src/main/libs/trtc-electron-sdk/build/mac-framework/arm64/*.framework',
             dest: '../../node_modules/electron/dist/Electron.app/Contents/Frameworks'
+          },
+          {
+            src: 'src/main/libs/trtc-electron-sdk/build/mac-framework/arm64/*.framework',
+            dest: './Frameworks'
+          },
+          {
+            src: 'src/main/libs/trtc-electron-sdk/build/Release/arm64/*.node',
+            dest: '.'
           }
         ]
       })
