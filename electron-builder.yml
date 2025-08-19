@@ -13,6 +13,11 @@ asarUnpack:
   - resources/**
 win:
   executableName: trtc_electron_demo
+  extraFiles:
+    - from: out/main
+      to: .
+      filter:
+        - '*.dll'
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
