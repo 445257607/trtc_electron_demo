@@ -3,6 +3,8 @@
   "include": ["electron.vite.config.*", "src/main/**/*", "src/preload/*.d.ts"],
   "compilerOptions": {
     "composite": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "types": ["electron-vite/node"],
     "baseUrl": ".",
     "paths": {
