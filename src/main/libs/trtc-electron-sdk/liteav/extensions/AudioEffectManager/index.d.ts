@@ -1,0 +1,239 @@
+import { TRTCVoiceReverbType, TRTCVoiceChangerType, TRTCAudioMusicParam, TRTCMusicPlayObserver, TRTCMusicPreloadObserver } from '../../trtc_define';
+declare const NodeTRTCEngine: any;
+/**
+ * 音效管理器
+ */
+export declare class TRTCAudioEffectManager {
+    private logPrefix;
+    private isIPCMode;
+    private nodeAudioEffectManager;
+    private promiseStore;
+    constructor(options: {
+        isIPCMode: boolean;
+        nodeTRTCCloud: typeof NodeTRTCEngine.TRTCCloud | typeof NodeTRTCEngine.RemoteTRTCCloud;
+    });
+    destroy(): void;
+    /**
+     * 开启耳返
+     *
+     * 主播开启耳返后，可以在耳机里听到麦克风采集到的自己发出的声音，该特效适用于主播唱歌的应用场景中。
+     * 需要您注意的是，由于蓝牙耳机的硬件延迟非常高，所以在主播佩戴蓝牙耳机时无法开启此特效，请尽量在用户界面上提示主播佩戴有线耳机。
+     * 同时也需要注意，并非所有的手机开启此特效后都能达到优秀的耳返效果，我们已经对部分耳返效果不佳的手机屏蔽了该特效。
+     *
+     * 注意：仅在主播佩戴耳机时才能开启此特效，同时请您提示主播佩戴有线耳机。
+     *
+     * @param {Boolean} enable - true：开启；false：关闭。
+     * @returns {Promise<void>}
+     */
+    enableVoiceEarMonitor(enable: boolean): Promise<void>;
+    /**
+     * 设置耳返音量
+     *
+     * 通过该接口您可以设置耳返特效中声音的音量大小。
+     * 注意：如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+     *
+     * @param {Number} volume - 音量大小，取值范围为 0 - 100，默认值：100。
+     * @returns {Promise<void>}
+     */
+    setVoiceEarMonitorVolume(volume: number): Promise<void>;
+    /**
+     * 设置人声的混响效果
+     *
+     * 通过该接口您可以设置人声的混响效果，具体特效请参见枚举定义 {@link TRTCVoiceReverbType}。
+     * 注意：设置的效果在退出房间后会自动失效，如果下次进房还需要对应特效，需要调用此接口再次进行设置。
+     *
+     * @param {TRTCVoiceReverbType} type - 混响类型
+     * @returns {Promise<void>}
+     */
+    setVoiceReverbType(type: TRTCVoiceReverbType): Promise<void>;
+    /**
+     * 设置人声的变声特效
+     *
+     * 通过该接口您可以设置人声的变声特效，具体特效请参见枚举定义 {@link TRTCVoiceChangerType}。
+     * 注意：设置的效果在退出房间后会自动失效，如果下次进房还需要对应特效，需要调用此接口再次进行设置。
+     *
+     * @param {TRTCVoiceChangerType} type - 变声类型
+     * @returns {Promise<void>}
+     */
+    setVoiceChangerType(type: TRTCVoiceChangerType): Promise<void>;
+    /**
+     * 设置语音音量
+     *
+     * 该接口可以设置语音音量的大小，一般配合音乐音量的设置接口 {@link setAllMusicVolume} 协同使用，用于调谐语音和音乐在混音前各自的音量占比。
+     * 注意：如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+     *
+     * @param {Number} volume - 音量大小，取值范围为0 - 100，默认值：100。
+     * @returns {Promise<void>}
+     */
+    setVoiceCaptureVolume(volume: number): Promise<void>;
+    /**
+     * 设置语音音调
+     *
+     * 该接口可以设置语音音调，用于实现变调不变速的目的。
+     * @param {Number} pitch - 音调，取值范围为-1.0f~1.0f，默认值：0.0f。
+     * @returns {Promise<void>}
+     */
+    setVoicePitch(pitch: number): Promise<void>;
+    /**
+     * 设置背景音乐的事件回调监听
+     *
+     * 请在播放背景音乐之前使用该接口设置播放事件回调，以便感知背景音乐的播放进度。
+     *
+     * @param {TRTCMusicPlayObserver} observer - 背景音乐播放事件回调
+     * @returns {Promise<void>}
+     */
+    setMusicObserver(observer: TRTCMusicPlayObserver): Promise<void>;
+    /**
+     * 开始播放背景音乐
+     *
+     * @param {TRTCAudioMusicParam} musicParam - 背景音乐参数
+     * @returns {Promise<void>}
+     */
+    startPlayMusic(param: TRTCAudioMusicParam): Promise<void>;
+    /**
+     * 停止播放背景音乐
+     *
+     * @param {Number} id - 音乐 ID
+     * @returns {Promise<void>}
+     */
+    stopPlayMusic(id: number): Promise<void>;
+    /**
+     * 暂停播放背景音乐
+     *
+     * @param {Number} id 音乐 ID
+     * @returns {Promise<void>}
+     */
+    pausePlayMusic(id: number): Promise<void>;
+    /**
+     * 恢复播放背景音乐
+     *
+     * @param {Number} id 音乐 ID
+     * @returns {Promise<void>}
+     */
+    resumePlayMusic(id: number): Promise<void>;
+    /**
+     * 设置所有背景音乐的本地音量和远端音量的大小
+     *
+     * 该接口可以设置所有背景音乐的本地音量和远端音量。
+     *  - 本地音量：即主播本地可以听到的背景音乐的音量大小。
+     *  - 远端音量：即观众端可以听到的背景音乐的音量大小。
+     *
+     * 注意：如果将 volume 设置成 100 之后感觉音量还是太小，可以将 volume 最大设置成 150，但超过 100 的 volume 会有爆音的风险，请谨慎操作。
+     *
+     * @param {Number} volume - 音量大小，100为正常音量，取值范围为0 - 200。
+     * @returns {Promise<void>}
+     */
+    setAllMusicVolume(volume: number): Promise<void>;
+    /**
+     * 设置背景音乐远端播放音量的大小
+     *
+     * 播放背景音乐混音时使用，用来控制背景音乐在远端播放时的音量大小。
+     *
+     * @param {Number} id - 音乐 ID
+     * @param {Number} volume - 音量大小，100为正常音量，取值范围为0 - 100；默认值：100
+     * @returns {Promise<void>}
+     */
+    setMusicPublishVolume(id: number, volume: number): Promise<void>;
+    /**
+     * 设置背景音乐本地播放音量的大小
+     *
+     * 播放背景音乐混音时使用，用来控制背景音乐在本地播放时的音量大小。
+     *
+     * @param {Number} id - 音乐 ID
+     * @param {Number} volume - 音量大小，100为正常音量，取值范围为0 - 100；默认值：100
+     * @returns {Promise<void>}
+     */
+    setMusicPlayoutVolume(id: number, volume: number): Promise<void>;
+    /**
+     * 调整背景音乐的音调高低
+     *
+     * @param {Number} id - 音乐 ID。
+     * @param {Number} pitch - 音调，默认值是0.0f，范围是：[-1 ~ 1] 之间的浮点数。
+     * @returns {Promise<void>}
+     */
+    setMusicPitch(id: number, pitch: number): Promise<void>;
+    /**
+     * 调整背景音乐的变速效果
+     *
+     * @param {Number} id  -  音乐 ID。
+     * @param {Number} speedRate - 速度，默认值是1.0f，范围是：[0.5 ~ 2] 之间的浮点数。
+     * @returns {Promise<void>}
+     */
+    setMusicSpeedRate(id: number, speedRate: number): Promise<void>;
+    /**
+     * 获取背景音乐的播放进度（单位：毫秒）
+     *
+     * @param {Number} id - 音乐 ID。
+     * @return {Promise<Number>|Number} 成功返回当前播放时间，单位：毫秒，失败返回 -1。
+     */
+    getMusicCurrentPosInMS(id: number): Promise<number> | number;
+    /**
+     * 获取背景音乐的总时长（单位：毫秒）
+     *
+     * @param {String} path - 音乐文件路径。
+     * @return {Promise<number>|Number} 成功返回时长，失败返回 -1。
+     */
+    getMusicDurationInMS(path: string): Promise<number> | number;
+    /**
+     * 设置背景音乐的播放进度（单位：毫秒）
+     *
+     * 注意：请尽量避免过度频繁地调用该接口，因为该接口可能会再次读写音乐文件，耗时稍高。
+     *  因此，当用户拖拽音乐的播放进度条时，请在用户完成拖拽操作后再调用本接口。
+     *  因为 UI 上的进度条控件往往会以很高的频率反馈用户的拖拽进度，如不做频率限制，会导致较差的用户体验。
+     * @param {Number} id - 音乐 ID
+     * @param {Number} pts - 单位: 毫秒
+     * @returns {Promise<void>}
+     */
+    seekMusicToPosInTime(id: number, pts: number): Promise<void>;
+    /**
+     * 调整搓碟的变速效果
+     *
+     * @param {Number} id - 音乐 ID。
+     * @param {Number} scratchSpeedRate - 搓碟速度，默认值是1.0f，范围是：[-12.0 ~ 12.0] 之间的浮点数, 速度值正/负表示方向正/反，绝对值大小表示速度快慢。
+     * 注意：前置条件 preloadMusic 成功。
+     * @returns {Promise<void>}
+     */
+    setMusicScratchSpeedRate(id: number, speedRate: number): Promise<void>;
+    /**
+     * 设置预加载事件回调
+     *
+     * 请在预加载背景音乐之前使用该接口设置回调，以便感知背景音乐的预加载进度。
+     * @param {TRTCMusicPreloadObserver} observer - 音乐加载监听
+     * @returns {Promise<void>}
+     */
+    setPreloadObserver(observer: TRTCMusicPreloadObserver): Promise<void>;
+    /**
+     * 预加载背景音乐
+     *
+     * 每个音乐都需要您指定具体的 ID，您可以通过该 ID 对音乐的开始、停止、音量等进行设置。
+     * 注意：
+     * 1. 预先加载最多同时支持2个不同 ID 的预加载，且预加载时长不超过10分钟，使用完需 stopPlayMusic，否则内存不释放。
+     * 2. 若该ID对应的音乐正在播放中，预加载会失败，需先调用 stopPlayMusic。
+     * 3. 当 musicParam 和传入 startPlayMusic 的 musicParam 完全相同时，预加载有效。
+     *
+     * @param {TRTCAudioMusicParam} preloadParam - 预加载音乐参数。
+     * @returns {Promise<void>}
+     */
+    preloadMusic(param: TRTCAudioMusicParam): Promise<void>;
+    /**
+     * 获取背景音乐的音轨数量
+     *
+     * @param {Number} id - 音乐 ID。
+     * @returns {Promise<Number>|Number}
+     */
+    getMusicTrackCount(id: number): Promise<number> | number;
+    /**
+     * 指定背景音乐的播放音轨
+     *
+     * 注意：音轨总数量可通过 getMusicTrackCount 接口获取。
+     *
+     * @param {Number} id - 音乐 ID。
+     * @param {Number} index - 默认播放第一个音轨。取值范围[0, 音轨总数)。
+     * @returns {Promise<void>}
+     */
+    setMusicTrack(id: number, trackIndex: number): Promise<void>;
+    private eventHandler;
+    private addPromise;
+    private removePromise;
+}
+export default TRTCAudioEffectManager;

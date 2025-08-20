@@ -6,6 +6,7 @@ import { TRTCAppScene, TRTCInitConfig, TRTCParams } from "./trtc_define";
 const NodeTRTCEngine = require("./trtc_electron_sdk.node");
 
 import { Logger } from "./logger";
+import TRTCDeviceManager from "./extensions/DeviceManager";
 const pkg = { version: "12.6.705" };
 const SDK_LOG_LEVEL = 2;
 
@@ -61,7 +62,7 @@ class TRTCCloud extends EventEmitter {
   // private videoProcessPixelFormat;
   // private videoRenderFPS;
   // private localVideoRenderController;
-  // private deviceManager;
+  private deviceManager;
   // private audioEffectManager;
   // private pluginManager;
   // private mediaMixingManager;
@@ -79,6 +80,9 @@ class TRTCCloud extends EventEmitter {
   // private playAudioEffectIdList;
   // private remoteVideoBufferMap;
   // private localVideoBufferMap;
+  _isMacPlatform(): boolean {
+    return process.platform == 'darwin';
+  }
   /**
    * @param {TRTCInitConfig} [config] - 初始化参数，可选
    * @param {Record<string, any>} [config.networkProxy]  - 网络代理参数，可选。为空时，默认不开启网络代理。
@@ -133,10 +137,10 @@ class TRTCCloud extends EventEmitter {
     //   TRTCVideoPixelFormat.TRTCVideoPixelFormat_I420;
     this.initEventHandler();
 
-    // this.deviceManager = new TRTCDeviceManager({
-    //   isIPCMode: TRTCCloud.isIPCMode,
-    //   nodeTRTCCloud: this.rtcCloud,
-    // });
+    this.deviceManager = new TRTCDeviceManager({
+       isIPCMode: TRTCCloud.isIPCMode,
+       nodeTRTCCloud: this.rtcCloud,
+    });
     // this.audioEffectManager = new TRTCAudioEffectManager({
     //   isIPCMode: TRTCCloud.isIPCMode,
     //   nodeTRTCCloud: this.rtcCloud,
@@ -161,19 +165,19 @@ class TRTCCloud extends EventEmitter {
       }
       TRTCCloud.subInstances.push(this);
     }
-    // this.callExperimentalAPI(
-    //   '{"api":"setCurrentEnvironment","params" :{"electron":true}}',
-    // );
-    // if (this._isMacPlatform()) {
-    //   this.callExperimentalAPI(
-    //     JSON.stringify({
-    //       api: "setDirectCallback",
-    //       params: {
-    //         direct_callback: true,
-    //       },
-    //     }),
-    //   );
-    // }
+    this.callExperimentalAPI(
+      '{"api":"setCurrentEnvironment","params" :{"electron":true}}',
+    );
+    if (this._isMacPlatform()) {
+      this.callExperimentalAPI(
+        JSON.stringify({
+          api: "setDirectCallback",
+          params: {
+            direct_callback: true,
+          },
+        }),
+      );
+    }
   }
   /**
    * 创建 TRTCCloud 主实例对象（单例模式）
@@ -1402,6 +1406,33 @@ class TRTCCloud extends EventEmitter {
    */
   getSDKVersion(): string {
     return this.rtcCloud.getSDKVersion();
+  }
+  /////////////////////////////////////////////////////////////////////////////////
+  //
+  //                      实验接口
+  //
+  /////////////////////////////////////////////////////////////////////////////////
+  /**
+   * 调用实验性 API 接口
+   *
+   * 注意：该接口用于调用一些实验性功能
+   *
+   * @param {String} jsonStr - 接口及参数描述的 JSON 字符串
+   */
+  callExperimentalAPI(jsonStr: string): void {
+    try {
+      const json = JSON.parse(jsonStr);
+      const { api, params } = json;
+      if (this[api] && typeof this[api] === 'function') {
+        this[api](params);
+      }
+      else {
+        this.rtcCloud.callExperimentalAPI(jsonStr);
+      }
+    }
+    catch (error) {
+      this.logger.warn(`callExperimentalAPI invalid JSON parameter`, error);
+    }
   }
 }
 export default TRTCCloud;
